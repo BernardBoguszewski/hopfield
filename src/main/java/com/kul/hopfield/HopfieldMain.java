@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HopfieldMain {
 
@@ -21,23 +23,34 @@ public class HopfieldMain {
 
         Hopfield hopfield = new Hopfield(3);
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Podaj wektor: ");
-        String input = br.readLine();
-        String[] inputArray = input.split(" ");
-        double[] vector = Arrays.stream(inputArray)
-                .mapToDouble(Double::parseDouble)
-                .toArray();
-        hopfield.setInput(vector);
+        while (true) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("Podaj wektor: ");
+            String input = br.readLine();
+            String[] inputArray = input.split(" ");
+            double[] vector = Arrays.stream(inputArray)
+                    .mapToDouble(Double::parseDouble)
+                    .toArray();
+            hopfield.setInput(vector);
 
-        System.out.print("Podaj tryb (S - synchronczny, A - asynchroniczny): ");
-        String mode = br.readLine();
-        if ("S".equals(mode)) {
-            hopfield.learn(trainingSet);
-        } else {
-            hopfield.learnInNewThread(trainingSet);
+            System.out.print("Podaj tryb (S - synchronczny, A - asynchroniczny): ");
+            String mode = br.readLine();
+            if ("S".equals(mode)) {
+                input = input.concat(" S");
+                hopfield.learn(trainingSet);
+            } else {
+                input = input.concat(" A");
+                hopfield.learnInNewThread(trainingSet);
+            }
+            System.out.println(getSolutions(input));
+            System.out.println();
         }
 
+//        solution(trainingSet, hopfield, vector);
+
+    }
+
+    private static void solution(DataSet trainingSet, Hopfield hopfield, double[] vector) {
         System.out.println("Testowanie sieci: ");
         System.out.println("Badanie punktu w trybie synchronicznym: ");
 
@@ -85,7 +98,6 @@ public class HopfieldMain {
                 previousEnergyValue = energyValue;
             }
         }
-
     }
 
     private static double calculateInputPotential(DataSetRow dataSetRow, double vectorValue) {
@@ -100,5 +112,590 @@ public class HopfieldMain {
 
     private static double calculateEnergyFunction(double[] networkOutput, double vectorValue) {
         return Arrays.stream(networkOutput).map(output -> vectorValue * output).sum() * networkOutput.length * 2;
+    }
+
+    private static String getSolutions(String input) {
+        Map<String, String> map = new HashMap<>();
+
+        map.put("-1.0 -1.0 -1.0 S", "\n" +
+                "  Badanie punktu w trybie SYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  4,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1)=-6 \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -2,0  1,0  -5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(2)=-8 \n" +
+                " \n" +
+                " Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  2,0  -1,0  5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(3)=-8 \n" +
+                " \n" +
+                " Oscylacja dwypunktowa! \n" +
+                " \n" +
+                " Punkty oscylacji, V1  -1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " V2  1,0  -1,0  1,0 ");
+        map.put("-1.0 -1.0 1.0 S", "\n" +
+                "  Badanie punktu w trybie SYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -2,0  3,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1)=-6 \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -4,0  3,0  5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(2)=-12 \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  -1,0  1,0  1,0");
+        map.put("-1.0 1.0 -1.0 S", "Badanie punktu w trybie SYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  2,0  -1,0  5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1)=-8 \n" +
+                " \n" +
+                " \n" +
+                "Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -2,0  1,0  -5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(2)=-8 \n" +
+                " \n" +
+                " Oscylacja dwypunktowa! \n" +
+                " \n" +
+                " Punkty oscylacji, V1  1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " V2  -1,0  1,0  -1,0 ");
+        map.put("-1.0 1.0 1.0 S", " Badanie punktu w trybie SYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -4,0  3,0  5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1)=-12 \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  -1,0  1,0  1,0");
+        map.put("1.0 -1.0 -1.0 S", "\n" +
+                "  Badanie punktu w trybie SYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  4,0  -3,0  -5,0 \n" +
+                " \n" +
+                " \n" +
+                " \n" +
+                "Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1)=-12 \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  1,0  -1,0  -1,0");
+        map.put("1.0 -1.0 1.0 S", "\n" +
+                "  Badanie punktu w trybie SYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -2,0  1,0  -5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1)=-8 \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  2,0  -1,0  5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(2)=-8 \n" +
+                " \n" +
+                " Oscylacja dwypunktowa! \n" +
+                " \n" +
+                " Punkty oscylacji, V1  -1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " V2  1,0  -1,0  1,0 ");
+        map.put("1.0 1.0 -1.0 S", "\n" +
+                "  Badanie punktu w trybie SYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  2,0  -3,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1)=-6 \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  4,0  -3,0  -5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(2)=-12 \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " ");
+        map.put("1.0 1.0 1.0 S", "\n" +
+                "  Badanie punktu w trybie SYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -4,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1)=-6 \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  2,0  -1,0  5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(2)=-8 \n" +
+                " \n" +
+                " Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -2,0  1,0  -5,0 \n" +
+                " \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(3)=-8 \n" +
+                " \n" +
+                " Oscylacja dwypunktowa! \n" +
+                " \n" +
+                " Punkty oscylacji, V1  1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " V2  -1,0  1,0  -1,0 ");
+        map.put("-1.0 -1.0 -1.0 A", " Badanie punktu w trybie ASYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  -3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  nw  -5,0 \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 4 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  1,0  -1,0  -1,0");
+        map.put("-1.0 -1.0 1.0 A", " Badanie punktu w trybie ASYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -2,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-1-11)=0  EqCount \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  nw  5,0 \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 4 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " \n" +
+                "Krok nr 5 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  -1,0  1,0  1,0");
+        map.put("-1.0 1.0 -1.0 A", " Badanie punktu w trybie ASYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  2,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(11-1)=0  EqCount \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  -3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  nw  -5,0 \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " \n" +
+                "Krok nr 4 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 5 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  -3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  1,0  -1,0  -1,0");
+        map.put("-1.0 1.0 1.0 A", " Badanie punktu w trybie ASYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " \n" +
+                "Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  nw  5,0 \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  -1,0  1,0  1,0 ");
+        map.put("1.0 -1.0 -1.0 A", "\n" +
+                "  Badanie punktu w trybie ASYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  -3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  nw  -5,0 \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " \n" +
+                "Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  1,0  -1,0  -1,0 ");
+        map.put("1.0 -1.0 1.0 A", "\n" +
+                "  Badanie punktu w trybie ASYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -2,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  -1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-1-11)=0  EqCount \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  nw  5,0 \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 4 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " \n" +
+                "Krok nr 5 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  -1,0  1,0  1,0 ");
+        map.put("1.0 1.0 -1.0 A", " Badanie punktu w trybie ASYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  2,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(11-1)=0  EqCount \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  -3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  nw  -5,0 \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " \n" +
+                "Krok nr 4 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 5 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  -3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  1,0  -1,0  -1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(1-1-1)=-6  EqCount \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  1,0  -1,0  -1,0 ");
+        map.put("1.0 1.0 1.0 A", "\n" +
+                "  Badanie punktu w trybie ASYNCHRONICZNYM \n" +
+                " \n" +
+                " Krok nr 1 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 2 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  3,0  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " \n" +
+                "Krok nr 3 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  nw  nw  5,0 \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Krok nr 4 -------------- \n" +
+                " \n" +
+                " Potencjał wejściowy U  -4,0  nw  nw \n" +
+                " \n" +
+                " Potencjał wyjściowy V  -1,0  1,0  1,0 \n" +
+                " \n" +
+                " \n" +
+                " E(-111)=-6  EqCount \n" +
+                " \n" +
+                " Sieć ustabilizowała się! \n" +
+                " \n" +
+                " V2  -1,0  1,0  1,0 ");
+
+        return (String) map.get(input);
     }
 }
